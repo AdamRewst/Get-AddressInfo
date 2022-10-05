@@ -49,9 +49,38 @@ Function Get-AddressInfo {
         [Switch]$array = $false
     )
     Begin {
+        $global:allAddressData = @()
     }
     Process {
-        Foreach ($address in $ipAddress) {   
+        Foreach ($address in $ipAddress) {
+            #region - prepare parameters
+            Write-Verbose "Preparing Parameters..."
+            #Check if $address is within the private range. This will determine if it is a public address.
+            If ($address -Match '(^127\.)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)') {
+                Write-Error "$address is not an internet routable address. Please Specify an IP address outside of the private range."
+                Break
+            }
+
+            #Splatting for address info API
+            $addressInfoParams = @{
+                'URI'         = "http://ip-api.com/json/$address"
+                'Body'        = @{
+                    'fields' = 'offset,isp,org,as,lat,lon,regionName,city'
+                }
+                'ContentType' = 'application/json' 
+                'Method'      = 'Get'
+            }
+
+            #Splatting for weather API
+            $weatherParams = @{
+                'URI'         = "https://wttr.in/$address"
+                'Body'        = @{
+                    'format' = '"%C,%t,%w"'
+                }
+                'ContentType' = 'application/json' 
+                'Method'      = 'Get'
+            }
+            #endRegion - Prepare Parameters
         }
     }
     End {        
