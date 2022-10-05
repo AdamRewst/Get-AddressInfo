@@ -54,6 +54,7 @@ Function Get-AddressInfo {
     Process {
         Foreach ($address in $ipAddress) {
             #region - prepare parameters
+            
             Write-Verbose "Preparing Parameters..."
             #Check if $address is within the private range. This will determine if it is a public address.
             If ($address -Match '(^127\.)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)') {
@@ -80,7 +81,56 @@ Function Get-AddressInfo {
                 'ContentType' = 'application/json' 
                 'Method'      = 'Get'
             }
+            
             #endRegion - Prepare Parameters
+            #region - Gather info
+            
+            #Hide progress display for the following functions
+            $progPref = $global:ProgressPreference 
+            $global:ProgressPreference = 'SilentlyContinue'
+
+            #Collect average latency data from 10 pings
+            try {
+                Write-Verbose "Calculating Average Latency..."
+                $avgLatency = ((Test-Connection -Count 10 -ComputerName $address -ErrorAction stop -ErrorVariable $pingError).responsetime | Measure-Object -average).average
+            }
+            catch {
+                #Since pings can fail for common reasons such as firewall rules we will not terminate the script due to failure here.
+                $avgLatency = "FAILED"
+            }
+            #Collect number of hops to specified address
+            Try {        
+                Write-Verbose "Calculating Number of Hops..."  
+                $rtHops = (Test-NetConnection -TraceRoute -ComputerName $address -ErrorAction stop).traceRoute.count
+            }
+            catch {
+                Write-Error 'Failed to perform trace route on the address specified'
+                Break
+            }
+            #Set progress preference to original state
+            $global:ProgressPreference = $progPref
+            
+            #Gather Address info
+            try {
+                Write-Verbose "Gathering IP info data..."
+                $addressInfo = Invoke-RestMethod @addressInfoParams
+            }
+            catch {
+                Write-Error 'Failed to retrieve address info'
+                Break
+            }
+            
+            #Gather weather info
+            try {
+                Write-Verbose "Gathering Weather Information..."
+                $weatherInfo = Invoke-RestMethod @weatherParams   
+            }
+            catch {
+                Write-Error 'Failed to retrieve weather info'
+                Break
+            }
+            
+            #endRegion - Gather Info
         }
     }
     End {        
