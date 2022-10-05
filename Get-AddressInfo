@@ -131,8 +131,69 @@ Function Get-AddressInfo {
             }
             
             #endRegion - Gather Info
+            #region - Prepare Output
+            
+            Write-Verbose "Preparing Outputs..."
+            
+            #Building Array
+            $arrayOutput = @()
+            $obj = New-Object PSObject
+            $obj | Add-Member -type NoteProperty -Name 'addressSpecified' -Value $address
+            $obj | Add-Member -type NoteProperty -Name 'hops' -Value $rtHops
+            $obj | Add-Member -type NoteProperty -Name 'avgLatency' -Value $avgLatency
+            $obj | Add-Member -type NoteProperty -Name 'org' -Value $addressInfo.org
+            $obj | Add-Member -type NoteProperty -Name 'isp' -Value $addressInfo.isp
+            $obj | Add-Member -type NoteProperty -Name 'asn' -Value $addressInfo.as
+            $obj | Add-Member -type NoteProperty -Name 'city' -Value $addressInfo.city
+            $obj | Add-Member -type NoteProperty -Name 'state' -Value $addressInfo.regionName
+            $obj | Add-Member -type NoteProperty -Name 'coordinates' -Value "$($addressInfo.lat), $($addressinfo.lon)"
+            $obj | Add-Member -type NoteProperty -Name 'localTime' -Value ([System.DateTime]::UtcNow).AddSeconds($addressInfo.offset).toString('mm:HH tt')
+            $obj | Add-Member -type NoteProperty -Name 'localWeather' -Value $weatherInfo
+            $arrayOutput += $obj
+
+            #Building default output
+            $defaultOutput = @"
+
+    -------------------------------------        
+    Info For IP Address $Address
+    -------------------------------------
+    The average latency of 10 pings : $($arrayOutput.avgLatency)
+    The number of hops to destination address : $($arrayOutput.hops)
+    The ISP providing the service is $($arrayOutput.isp)
+    The ASN is $($arrayOutput.asn)
+    The location of this address is $($arrayOutput.city), $($arrayOutput.state)
+    The local time on location is $($arrayOutput.localtime)
+    The local weather on location is $($arrayOutput.localWeather)
+
+"@
+            
+            #Populate global variable
+            $obj = New-Object PSObject
+            $obj | Add-Member -type NoteProperty -Name 'arrayOutput' -Value $arrayOutput
+            $obj | Add-Member -type NoteProperty -Name 'defaultOutput' -Value $defaultOutput
+            $global:allAddressData += $obj
         }
     }
-    End {        
+    End {
+        #Create json object from the completed array
+        $obj = New-Object PSObject
+        $obj | Add-Member -type NoteProperty -Name 'jsonOutput' -Value ($allAddressData.arrayOutput | ConvertTo-Json)
+        $global:allAddressData += $obj
+
+        #endregion - Prepare Output
+
+        #region - Present Output
+        
+        Write-Verbose "Preparing Outputs..."
+        if ($json) {
+            Write-Output $allAddressData.jsonOutput
+        }
+        elseif ($array) {
+            Write-Output $allAddressData.arrayOutput
+        }
+        else {
+            Write-Output $allAddressData.defaultOutput
+        }
+        #endRegion - Present Output
     }
 }
