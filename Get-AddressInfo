@@ -93,7 +93,7 @@ Function Get-AddressInfo {
                 'Method'      = 'Get'
             }
             
-            #endRegion - Prepare Parameters
+            #endregion - Prepare Parameters
             #region - Gather Info
             
             #Hide progress display for the following functions
@@ -143,7 +143,7 @@ Function Get-AddressInfo {
                 Break
             }
             
-            #endRegion - Gather Info
+            #endregion - Gather Info
             #region - Prepare Output
             
             Write-Verbose "Preparing Outputs..."
@@ -194,7 +194,6 @@ Function Get-AddressInfo {
         $global:allAddressData += $obj
 
         #endregion - Prepare Output
-
         #region - Present Output
         
         Write-Verbose "Preparing Outputs..."
@@ -207,6 +206,6 @@ Function Get-AddressInfo {
         else {
             Write-Output $allAddressData.defaultOutput
         }
-        #endRegion - Present Output
+        #endregion - Present Output
     }
 }
