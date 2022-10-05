@@ -148,7 +148,7 @@ Function Get-AddressInfo {
             
             Write-Verbose "Preparing Outputs..."
             
-            #Building Array
+            #Building array
             $arrayOutput = @()
             $obj = New-Object PSObject
             $obj | Add-Member -type NoteProperty -Name 'addressSpecified' -Value $address
@@ -168,7 +168,7 @@ Function Get-AddressInfo {
             $defaultOutput = @"
 
     -------------------------------------        
-    Info For IP Address $Address
+    Info For IP Address: $Address
     -------------------------------------
     The average latency of 10 pings : $($arrayOutput.avgLatency)
     The number of hops to destination address : $($arrayOutput.hops)
@@ -188,7 +188,7 @@ Function Get-AddressInfo {
         }
     }
     End {
-        #Create json object from the completed array
+        #Create json object from the completed array & add to global
         $obj = New-Object PSObject
         $obj | Add-Member -type NoteProperty -Name 'jsonOutput' -Value ($allAddressData.arrayOutput | ConvertTo-Json)
         $global:allAddressData += $obj
