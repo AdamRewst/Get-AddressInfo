@@ -66,6 +66,7 @@ Function Get-AddressInfo {
             #region - Prepare Parameters
             
             Write-Verbose "Preparing Parameters..."
+            
             #Check if $address is within the private range. This will determine if it is a public internet routable address.
             If ($address -Match '(^127\.)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)') {
                 Write-Error "$address is not an internet routable address. Please Specify an IP address outside of the private range."
@@ -108,6 +109,7 @@ Function Get-AddressInfo {
                 #Since pings can fail for common reasons such as firewall rules we will not terminate the script due to failure here.
                 $avgLatency = "FAILED"
             }
+            
             #Collect number of hops to specified address
             Try {        
                 Write-Verbose "Calculating Number of Hops..."  
@@ -117,6 +119,7 @@ Function Get-AddressInfo {
                 Write-Error 'Failed to perform trace route on the address specified'
                 Break
             }
+            
             #Set progress preference to original state
             $global:ProgressPreference = $progPref
             
