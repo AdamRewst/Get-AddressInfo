@@ -8,6 +8,7 @@ provide the following information for public ip addresses that are specified:
 
 * The average latency of 10 pings
 * The number of hops to destination address
+* The Org name
 * The ISP Information
 * The ASN Information
 * The geo-location data for the address
