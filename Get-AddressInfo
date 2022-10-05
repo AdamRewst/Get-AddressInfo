@@ -157,7 +157,7 @@ Function Get-AddressInfo {
             $obj | Add-Member -type NoteProperty -Name 'city' -Value $addressInfo.city
             $obj | Add-Member -type NoteProperty -Name 'state' -Value $addressInfo.regionName
             $obj | Add-Member -type NoteProperty -Name 'coordinates' -Value "$($addressInfo.lat), $($addressinfo.lon)"
-            $obj | Add-Member -type NoteProperty -Name 'localTime' -Value ([System.DateTime]::UtcNow).AddSeconds($addressInfo.offset).toString('mm:HH tt')
+            $obj | Add-Member -type NoteProperty -Name 'localTime' -Value ([System.DateTime]::UtcNow).AddSeconds($addressInfo.offset).toString('hh:mm tt')
             $obj | Add-Member -type NoteProperty -Name 'localWeather' -Value $weatherInfo
             $arrayOutput += $obj
 
